@@ -11,12 +11,12 @@ import time
 import logging
 import datetime
 
-from mpi4py import MPI
+# from mpi4py import MPI
 import numpy as np
 
 import torch
 from detectron2.data import MetadataCatalog
-from detectron2.utils.logger import log_every_n_seconds
+from detectron2.utils.logger import log_every_n_seconds, setup_logger
 
 from utils.arguments import load_opt_command
 from utils.distributed import init_distributed, is_main_process, apply_distributed, synchronize
@@ -25,6 +25,8 @@ from datasets import build_evaluator, build_eval_dataloader
 from openseed import build_model
 from openseed.BaseModel import BaseModel
 from openseed.utils import get_class_names
+
+import mess.datasets
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level = logging.INFO)
@@ -43,6 +45,9 @@ def main(args=None):
     # build model
     model = BaseModel(opt, build_model(opt)).from_pretrained(opt['WEIGHT']).eval().cuda()
 
+    # setup logger
+    setup_logger(output=opt['SAVE_DIR'])
+
     # build dataloade
     dataloaders = build_eval_dataloader(opt)
     # evaluation dataset
@@ -57,20 +62,24 @@ def main(args=None):
         evaluator.reset()
         with torch.no_grad():
             # setup model
-            names = get_class_names(dataset_name, opt['MODEL'].get('BACKGROUND', True))
+            # names = get_class_names(dataset_name, opt['MODEL'].get('BACKGROUND', True))
             # names = get_class_names(dataset_name)
             model.model.metadata = MetadataCatalog.get(dataset_name)
+            if opt['MODEL'].get('BACKGROUND', True):
+                names = (*model.model.metadata.stuff_classes, 'background')
+            else:
+             names = model.model.metadata.stuff_classes
             eval_type = model.model.metadata.evaluator_type
             if 'background' in names:
                 model.model.sem_seg_head.num_classes = len(names) - 1
             else:
                 model.model.sem_seg_head.num_classes = len(names)
             model.model.sem_seg_head.predictor.lang_encoder.get_text_embeddings(names, is_eval=True)
-            hook_switcher(model, dataset_name)
+            hook_switcher(model, 'ade20k_full_sem_seg_val')
             # hook_opt(model, dataset_name)
 
             # setup task
-            task = 'seg'
+            task = 'sem_seg'
 
             # setup timer
             total = len(dataloader)
