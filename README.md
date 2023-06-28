@@ -1,6 +1,6 @@
 # Multi-domain Evaluation of Semantic Segmentation (MESS) with OpenSeeD
 
-[[Website (soon)](https://github.io)] [[arXiv (soon)](https://arxiv.org/ )] [[GitHub](https://github.com/blumenstiel/MESS)]
+[[Website](https://blumenstiel.github.io/mess-benchmark/)] [[arXiv](https://arxiv.org/abs/2306.15521)] [[GitHub](https://github.com/blumenstiel/MESS)]
 
 This directory contains the code for the MESS evaluation of OpenSeeD. Please see the commits for our changes of the model.
 
@@ -10,7 +10,7 @@ Create a conda environment `openseed` and install the required packages. See [me
  bash mess/setup_env.sh
 ```
 
-Prepare the datasets by following the instructions in [mess/DATASETS.md](mess/DATASETS.md). The `openseed` env can be used for the dataset preparation. If you evaluate multiple models with MESS, you can change the `dataset_dir` argument and the `DETECTRON2_DATASETS` environment variable to a common directory (see [mess/DATASETS.md](mess/DATASETS.md) and [mess/eval.sh](mess/eval.sh), e.g. `../mess_datasets`). 
+Prepare the datasets by following the instructions in [mess/DATASETS.md](mess/DATASETS.md). The `openseed` env can be used for the dataset preparation. If you evaluate multiple models with MESS, you can change the `dataset_dir` argument and the `DETECTRON2_DATASETS` environment variable to a common directory (see [mess/DATASETS.md](mess/DATASETS.md) and [mess/eval.sh](mess/eval.sh), e.g., `../mess_datasets`). 
 
 Download the OpenSeeD weights (see https://github.com/IDEA-Research/OpenSeeD)
 ```sh
